@@ -101,6 +101,23 @@ def is_prime(n):
             return False
     return True
 
+###########################################################################
+###########################################################################
+###########################################################################
+
+def f1(x, n):
+  return (x * x - 1) % n
+
+def rho(n, f = f1):
+    x = 2
+    y = 2
+    d = 1
+    while d == 1:
+        x = f(x, n)
+        y = f(f(y, n), n)
+        d = gcd(abs(x - y), n)
+
+    return d
 
 ###########################################################################
 ###########################################################################
@@ -131,14 +148,26 @@ def test2(num_list):
 def test3(n):
     return rand_prime(n)
 
+@fn_timer
+def test4(n):
+    return rho(n)
+
 def main():
-    n = 1024
+    n = 128
     t = test3(n)
-    assert miller_rabin(t) and t < pow(2, n) and t > pow(2, n - 1), "质数错误"
     print t
+    assert miller_rabin(t) and t < pow(2, n) and t > pow(2, n - 1), "质数错误"
+
+
+    m = 32
+    mm = test3(m) * test3(m)
+    d = test4(mm)
+    print d, ' * ', mm / d, ' = ', mm
+    assert mm % d == 0 and miller_rabin(d) and miller_rabin(mm / d), "因数错误"
+
 
     base = 1000000000
-    num = 100000
+    num = 10000
     num_list = [ n for n in range(base, base + num) if n % 2 != 0 and n % 3 != 0 and n % 5 != 0 and n % 7 != 0 ]
     ret1 = test1(num_list)
     print 'test1 OK'
