@@ -2,6 +2,8 @@
 
 from random import randint
 import math
+import time
+from functools import wraps
 
 def pow_mod(a, b, r):
     """ Returns a**b (mod r) """
@@ -66,20 +68,50 @@ def is_prime(n):
     if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0:
         return False
 
-    for i in range(2, int(math.sqrt(n))):
+    for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
             return False
     return True
 
-def main():
-    for n in range(1, 10000000):
-        if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0:
-            continue
 
-        if miller_rabin(n, 10):
-            if not is_prime(n):
-                print n
-    print 'OK'
+###########################################################################
+###########################################################################
+###########################################################################
+
+
+def fn_timer(function):
+  @wraps(function)
+  def function_timer(*args, **kwargs):
+    t0 = time.time()
+    result = function(*args, **kwargs)
+    t1 = time.time()
+    print ("Total time running %s: %s seconds" %
+        (function.func_name, str(t1-t0))
+        )
+    return result
+  return function_timer
+
+@fn_timer
+def test1(num_list, k = 10):
+    return [n for n in num_list if miller_rabin(n, k)]
+
+@fn_timer
+def test2(num_list):
+    return [n for n in num_list if is_prime(n)]
+
+def main():
+    base = 100000000
+    num = 100000
+    num_list = [ n for n in range(base, base + num) if n % 2 != 0 and n % 3 != 0 and n % 5 != 0 and n % 7 != 0 ]
+    ret1 = test1(num_list)
+    print 'test1 OK'
+
+    ret2 = test2(num_list)
+    print 'test2 OK'
+
+    assert len(ret1) == len(ret2), "素数个数不相同"
+    assert ret1[-1] == ret2[-1], "素数 不相同"
+
 
 if __name__ == '__main__':
     main()
