@@ -159,7 +159,7 @@ def main():
     assert miller_rabin(t) and t < pow(2, n) and t > pow(2, n - 1), "质数错误"
 
 
-    m = 32
+    m = 42
     mm = test3(m) * test3(m)
     d = test4(mm)
     print d, ' * ', mm / d, ' = ', mm
