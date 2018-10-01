@@ -26,6 +26,8 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
+IS_PRIME_LTE7 = [False, False, True, True, False, True, False, True]
+
 def miller_rabin(n, k=50):
     """
     Miller-Rabin Primality Test
@@ -34,7 +36,7 @@ def miller_rabin(n, k=50):
     """
     n = int(abs(n))
     if n <= 7:
-        return [False, False, True, True, False, True, False, True][n]
+        return IS_PRIME_LTE7[n]
 
     if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0:
         return False
@@ -60,15 +62,19 @@ def miller_rabin(n, k=50):
             return False
     return True
 
+###########################################################################
+###########################################################################
+###########################################################################
+
 def is_prime(n):
     n = int(abs(n))
     if n <= 7:
-        return [False, False, True, True, False, True, False, True][n]
+        return IS_PRIME_LTE7[n]
 
     if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0:
         return False
 
-    for i in range(2, int(math.sqrt(n)) + 1):
+    for i in range(11, int(math.sqrt(n)) + 1, 2):
         if n % i == 0:
             return False
     return True
@@ -100,7 +106,7 @@ def test2(num_list):
     return [n for n in num_list if is_prime(n)]
 
 def main():
-    base = 100000000
+    base = 1000000000
     num = 100000
     num_list = [ n for n in range(base, base + num) if n % 2 != 0 and n % 3 != 0 and n % 5 != 0 and n % 7 != 0 ]
     ret1 = test1(num_list)
