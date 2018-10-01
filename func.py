@@ -48,11 +48,11 @@ def miller_rabin(n, k=50):
         d = d >> 1
     for _ in range(k):
         a = randint(2, n-2)
-        x = pow_mod(a, d, n)
+        x = pow(a, d, n)
         if x == 1 or x == n-1:
             continue
         for _ in range(s-1):
-            x = pow_mod(x, 2, n)
+            x = pow(x, 2, n)
             if x == 1:
                 return False
             elif x == n - 1:
@@ -61,6 +61,28 @@ def miller_rabin(n, k=50):
         if a:
             return False
     return True
+
+def rand_prime(bitsa, bitsb = None, k = 50):
+    bitsa = int(abs(bitsa))
+    bitsb = int(abs(bitsb)) if bitsb else bitsa
+
+    if bitsa > bitsb:
+        bitsa, bitsb = bitsb, bitsa
+    elif bitsa == bitsb:
+        bitsa = bitsb - 1
+
+    lower = pow(2, bitsa)
+    upper = pow(2, bitsb)
+    upper_ = upper - upper / (int(math.log(upper)) + 1)
+    r = lower + randint(0, upper_ - lower)
+    r = r + 1 if r % 2 == 0 else r
+    while 1:
+        if miller_rabin(r, k):
+            return r
+        r += 2
+        if r > upper:
+            r = lower + randint(0, upper_ - lower)
+            r = r + 1 if r % 2 == 0 else r
 
 ###########################################################################
 ###########################################################################
@@ -74,7 +96,7 @@ def is_prime(n):
     if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0:
         return False
 
-    for i in range(11, int(math.sqrt(n)) + 1, 2):
+    for i in xrange(11, int(math.sqrt(n)) + 1, 2):
         if n % i == 0:
             return False
     return True
@@ -98,14 +120,23 @@ def fn_timer(function):
   return function_timer
 
 @fn_timer
-def test1(num_list, k = 10):
+def test1(num_list, k = 50):
     return [n for n in num_list if miller_rabin(n, k)]
 
 @fn_timer
 def test2(num_list):
     return [n for n in num_list if is_prime(n)]
 
+@fn_timer
+def test3(n):
+    return rand_prime(n)
+
 def main():
+    n = 1024
+    t = test3(n)
+    assert miller_rabin(t) and t < pow(2, n) and t > pow(2, n - 1), "质数错误"
+    print t
+
     base = 1000000000
     num = 100000
     num_list = [ n for n in range(base, base + num) if n % 2 != 0 and n % 3 != 0 and n % 5 != 0 and n % 7 != 0 ]
